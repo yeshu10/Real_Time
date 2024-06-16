@@ -1,13 +1,19 @@
-// src/components/Login.tsx
-import React, { useEffect } from 'react';
-import keycloak from '../keycloak';
+import React from 'react';
+import { useKeycloak } from '@react-keycloak/web';
 
 const Login: React.FC = () => {
-  useEffect(() => {
-    keycloak.login();
-  }, []);
+  const { keycloak } = useKeycloak();
 
-  return <div>Redirecting to login...</div>;
+  const login = () => {
+    keycloak.login();
+  };
+
+  return (
+    <div>
+      <h1>Login</h1>
+      <button onClick={login}>Login with Keycloak</button>
+    </div>
+  );
 };
 
 export default Login;

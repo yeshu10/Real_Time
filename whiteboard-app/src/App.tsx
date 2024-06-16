@@ -1,11 +1,12 @@
-// src/App.tsx
+// App.tsx
+
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import Keycloak from 'keycloak-js';
 import Home from './components/Home';
 import Login from './components/Login';
-import PrivateRoute from './components/PrivateRoute';
+import Whiteboard from './components/Whiteboard';
 import keycloak from './keycloak';
-import Logout from './components/Logout';
 
 const App: React.FC = () => {
   const [keycloakInstance, setKeycloakInstance] = useState<Keycloak.KeycloakInstance | null>(null);
@@ -24,23 +25,23 @@ const App: React.FC = () => {
       });
   }, []);
 
-  if (!keycloakInstance) {
-    return <div>Loading...</div>;
+  if (keycloakInstance) {
+    if (authenticated) {
+      return (
+        <Router>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/whiteboard/:roomId" component={Whiteboard} />
+            <Redirect to="/" />
+          </Switch>
+        </Router>
+      );
+    } else {
+      return <div>Unable to authenticate!</div>;
+    }
   }
 
-  if (!authenticated) {
-    return <div>Unable to authenticate!</div>;
-  }
-
-  return (
-    <Router>
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/logout" component={Logout} />
-        <PrivateRoute exact path="/" component={Home} />
-      </Switch>
-    </Router>
-  );
+  return <div>Loading...</div>;
 };
 
 export default App;
